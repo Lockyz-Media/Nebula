@@ -180,7 +180,11 @@ const generateServerCommand: CommandModule = {
                 describe: 'Fabric version.',
                 type: 'string'
             })
-            .conflicts('forge', 'fabric')
+            .option('vanilla', {
+                describe: 'Vanilla version.',
+                type: 'string'
+            })
+            .conflicts('forge', 'fabric', 'vanilla')
     },
     handler: async (argv) => {
         argv.root = getRoot()
@@ -192,6 +196,15 @@ const generateServerCommand: CommandModule = {
         )
 
         const minecraftVersion = new MinecraftVersion(argv.version as string)
+
+        if(argv.vanilla != null) {
+            if(VersionUtil.isPromotionVersion(argv.vanilla as string)) {
+                logger.debug(`Resolving ${argv.vanilla as string} Vanilla Version..`)
+                const version = await VersionUtil.getPromotedVanillaVersion(minecraftVersion, argv.vanilla as string)
+                logger.debug(`Vanilla version set to ${version}`)
+                argv.vanilla = version
+            }
+        }
 
         if(argv.forge != null) {
             if (VersionUtil.isPromotionVersion(argv.forge as string)) {
@@ -217,7 +230,8 @@ const generateServerCommand: CommandModule = {
             minecraftVersion,
             {
                 forgeVersion: argv.forge as string,
-                fabricVersion: argv.fabric as string
+                fabricVersion: argv.fabric as string,
+                vanillaVersion: argv.vanilla as string
             }
         )
     }
@@ -260,8 +274,12 @@ const generateServerCurseForgeCommand: CommandModule = {
         const primaryModLoader = modpackManifest.minecraft.modLoaders.find(({ primary }) => primary)
         let forgeVersion;
         let fabricVersion;
+        let vanillaVersion;
         if (primaryModLoader != null) {
-            if (primaryModLoader.id.includes("forge")) {
+            if(primaryModLoader.id.includes("vanilla")) {
+                vanillaVersion = primaryModLoader.id.substring('vanilla-'.length)
+                logger.debug(`Vanilla version set to ${vanillaVersion}`)
+            } else if (primaryModLoader.id.includes("forge")) {
                 forgeVersion = primaryModLoader.id.substring('forge-'.length)
                 logger.debug(`Forge version set to ${forgeVersion}`)
             } else if (primaryModLoader.id.includes("fabric")) {
@@ -279,6 +297,7 @@ const generateServerCurseForgeCommand: CommandModule = {
             minecraftVersion,
             {
                 version: modpackManifest.version,
+                vanillaVersion,
                 forgeVersion,
                 fabricVersion
             }

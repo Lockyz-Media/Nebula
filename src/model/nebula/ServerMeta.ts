@@ -16,6 +16,7 @@ export interface ServerMetaOptions {
     version?: string
     forgeVersion?: string
     fabricVersion?: string
+    vanillaVersion?: string
 }
 
 export function getDefaultServerMeta(id: string, version: string, options?: ServerMetaOptions): ServerMeta {
@@ -34,6 +35,13 @@ export function getDefaultServerMeta(id: string, version: string, options?: Serv
             },
             mainServer: false,
             autoconnect: false
+        }
+    }
+
+    if(options?.vanillaVersion) {
+        servMeta.meta.description = `${servMeta.meta.description} (Vanilla v${options.vanillaVersion})`
+        servMeta.vanilla = {
+            version: options.vanillaVersion
         }
     }
 
@@ -72,6 +80,17 @@ export interface ServerMeta {
         mainServer: Server['mainServer']
         autoconnect: Server['autoconnect']
         javaOptions?: Server['javaOptions']
+    }
+
+    /**
+     * Properties related to Vanilla.
+     */
+    vanilla?: {
+        /**
+         * The vanilla version. This does NOT include the minecraft version.
+         * Ex. 1.12.2
+         */
+        version: string
     }
 
     /**

@@ -56,6 +56,7 @@ export class ServerStructure extends BaseModelStructure<Server> {
             version?: string
             forgeVersion?: string
             fabricVersion?: string
+            vanillaVersion?: string
         }
     ): Promise<CreateServerResult | null> {
         const effectiveId = ServerStructure.getEffectiveId(id, minecraftVersion)
@@ -73,6 +74,10 @@ export class ServerStructure extends BaseModelStructure<Server> {
             version: options.version
         }
         let modContainer: string | undefined = undefined
+
+        /*if(options.vanillaVersion != null) {
+            const fms = VersionSegmentedRegistry.get
+        }*/
 
         if (options.forgeVersion != null) {
             const fms = VersionSegmentedRegistry.getForgeModStruct(

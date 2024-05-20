@@ -1,3 +1,8 @@
+# Using code from Nebula itself, our own fork and other forks of Nebula
+This list will be updated every time we use code from various forks of Nebula.
+
+Curseforge Fabric support: https://github.com/Kalitsune/Nebula
+
 # Nebula
 
 Generate a distribution.json for Helios. Documentation on this format can be found [here][distro.md].
